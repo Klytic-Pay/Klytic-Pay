@@ -134,7 +134,7 @@ class _InvoiceCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: _getStatusColor().withOpacity(0.2),
+          backgroundColor: _getStatusColor().withValues(alpha: 0.2),
           child: Icon(Icons.receipt, color: _getStatusColor()),
         ),
         title: Text(invoice.clientEmail),
@@ -146,7 +146,7 @@ class _InvoiceCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: _getStatusColor().withOpacity(0.2),
+                color: _getStatusColor().withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(

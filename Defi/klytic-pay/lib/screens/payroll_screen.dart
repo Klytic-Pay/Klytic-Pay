@@ -95,7 +95,7 @@ class _PayrollCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.secondary.withOpacity(0.2),
+          backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
           child: Icon(Icons.person, color: AppColors.secondary),
         ),
         title: Text(payroll.payeeName),
@@ -208,7 +208,7 @@ class _PayrollFormScreenState extends State<PayrollFormScreen> {
               const SizedBox(height: 16),
               
               DropdownButtonFormField<String>(
-                value: _selectedCurrency,
+                initialValue: _selectedCurrency,
                 decoration: const InputDecoration(
                   labelText: 'Currency',
                   prefixIcon: Icon(Icons.currency_bitcoin),
@@ -224,13 +224,15 @@ class _PayrollFormScreenState extends State<PayrollFormScreen> {
                   ),
                 ],
                 onChanged: (value) {
-                  setState(() => _selectedCurrency = value!);
+                  if (value != null) {
+                    setState(() => _selectedCurrency = value);
+                  }
                 },
               ),
               const SizedBox(height: 16),
               
               DropdownButtonFormField<PaymentFrequency>(
-                value: _selectedFrequency,
+                initialValue: _selectedFrequency,
                 decoration: const InputDecoration(
                   labelText: AppStrings.paymentFrequency,
                   prefixIcon: Icon(Icons.schedule),
@@ -246,7 +248,9 @@ class _PayrollFormScreenState extends State<PayrollFormScreen> {
                   ),
                 ],
                 onChanged: (value) {
-                  setState(() => _selectedFrequency = value!);
+                  if (value != null) {
+                    setState(() => _selectedFrequency = value);
+                  }
                 },
               ),
               const SizedBox(height: 24),

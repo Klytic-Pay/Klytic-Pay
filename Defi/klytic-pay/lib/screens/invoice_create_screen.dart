@@ -100,7 +100,7 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
               
               // Currency Selection
               DropdownButtonFormField<String>(
-                value: _selectedCurrency,
+                initialValue: _selectedCurrency,
                 decoration: const InputDecoration(
                   labelText: 'Payment Currency',
                   prefixIcon: Icon(Icons.currency_bitcoin),
@@ -116,10 +116,12 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
                   ),
                 ],
                 onChanged: (value) {
-                  setState(() {
-                    _selectedCurrency = value!;
-                    _convertAmount();
-                  });
+                  if (value != null) {
+                    setState(() {
+                      _selectedCurrency = value;
+                      _convertAmount();
+                    });
+                  }
                 },
               ),
               const SizedBox(height: 16),
@@ -127,7 +129,7 @@ class _InvoiceCreateScreenState extends State<InvoiceCreateScreen> {
               // Converted Amount Display
               if (_convertedAmount != null)
                 Card(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Row(
