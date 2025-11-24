@@ -6,7 +6,14 @@ import 'payroll_screen.dart';
 import 'settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  const MainScreen({
+    super.key,
+    required this.isDarkMode,
+    required this.onThemeChanged,
+  });
+
+  final bool isDarkMode;
+  final ValueChanged<bool> onThemeChanged;
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -21,7 +28,10 @@ class _MainScreenState extends State<MainScreen> {
       const DashboardScreen(),
       const InvoiceListScreen(),
       const PayrollScreen(),
-      const SettingsScreen(),
+      SettingsScreen(
+        isDarkMode: widget.isDarkMode,
+        onThemeChanged: widget.onThemeChanged,
+      ),
     ];
 
     return Scaffold(

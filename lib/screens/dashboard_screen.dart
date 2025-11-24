@@ -5,49 +5,8 @@ import '../widgets/app_svg_icon.dart';
 import 'invoice_create_screen.dart';
 import 'payroll_screen.dart';
 
-// Placeholder for a more complex activity model
-class Activity {
-  final String title;
-  final String subtitle;
-  final String iconAsset;
-  final Color iconColor;
-
-  const Activity({
-    required this.title,
-    required this.subtitle,
-    required this.iconAsset,
-    required this.iconColor,
-  });
-}
-
-class DashboardScreen extends StatefulWidget {
+class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
-
-  @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-  final List<Activity> _recentActivities = [
-    Activity(
-      title: 'Invoice #123 paid',
-      subtitle: 'Client A - 100 BDAG',
-      iconAsset: AppIcons.check,
-      iconColor: AppColors.success,
-    ),
-    Activity(
-      title: 'Payroll for John Doe scheduled',
-      subtitle: '50 BDAG - Weekly',
-      iconAsset: AppIcons.schedule,
-      iconColor: AppColors.info,
-    ),
-    Activity(
-      title: 'New invoice created',
-      subtitle: 'Client B - 250 BDAG',
-      iconAsset: AppIcons.addCircle,
-      iconColor: AppColors.primary,
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: _SummaryCard(
                     title: AppStrings.totalInvoices,
                     value: '0',
-                    color: AppColors.primary,
+                    color: Colors.black87,
                     iconAsset: AppIcons.receipt,
                   ),
                 ),
@@ -79,7 +38,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: _SummaryCard(
                     title: AppStrings.scheduledPayroll,
                     value: '0',
-                    color: AppColors.primary,
+                    color: Colors.black87,
                     iconAsset: AppIcons.payment,
                   ),
                 ),
@@ -89,11 +48,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             // Quick Actions
             const Text(
-              AppStrings.quickActions,
+              'Quick Actions',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.accent,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 16),
@@ -103,8 +62,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: _ActionButton(
                     label: AppStrings.createInvoice,
                     iconAsset: AppIcons.addCircle,
-                    color: AppColors.accent,
-                    textColor: AppColors.white,
+                    color: const Color.fromARGB(255, 0, 0, 0),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -120,13 +78,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: _ActionButton(
                     label: AppStrings.schedulePayroll,
                     iconAsset: AppIcons.schedule,
-                    color: AppColors.accent,
-                    textColor: AppColors.white,
+                    color: Colors.black87,
+                    textColor: Colors.black,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const PayrollScreen(),
+                          builder: (context) => const PayrollFormScreen(),
                         ),
                       );
                     },
@@ -139,30 +97,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
             // Recent Activity
             const Text(
               AppStrings.recentActivity,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.accent),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            _recentActivities.isEmpty
-                ? Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: Text(
-                          AppStrings.noRecentActivity,
-                          style: TextStyle(color: AppColors.textSecondary),
-                        ),
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    shrinkWrap: true, // Important for nested list views
-                    physics: const NeverScrollableScrollPhysics(), // Disable scrolling
-                    itemCount: _recentActivities.length,
-                    itemBuilder: (context, index) {
-                      final activity = _recentActivities[index];
-                      return _RecentActivityCard(activity: activity);
-                    },
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Center(
+                  child: Text(
+                    'No recent activity',
+                    style: TextStyle(color: AppColors.textSecondary),
                   ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -186,7 +134,6 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.accent,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -196,12 +143,12 @@ class _SummaryCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.white),
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
               title,
-              style: TextStyle(fontSize: 12, color: AppColors.darkTextSecondary),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -229,52 +176,24 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        padding: const EdgeInsets.all(16)
-      ),
+      style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(16)),
       child: Column(
         children: [
           AppSvgIcon(
             assetName: iconAsset,
             size: 32,
-            color: textColor,
+            color:
+                color ??
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
           ),
           const SizedBox(height: 8),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: textColor),
+            style: TextStyle(fontSize: 12, color: textColor ?? Colors.black),
           ),
         ],
       ),
     );
   }
 }
-
-class _RecentActivityCard extends StatelessWidget {
-  final Activity activity;
-
-  const _RecentActivityCard({required this.activity});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: AppSvgIcon(
-          assetName: activity.iconAsset,
-          size: 24,
-          color: activity.iconColor,
-        ),
-        title: Text(activity.title),
-        subtitle: Text(activity.subtitle),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textSecondary),
-        onTap: () {
-          // TODO: Navigate to activity details
-        },
-      ),
-    );
-  }
-}
-

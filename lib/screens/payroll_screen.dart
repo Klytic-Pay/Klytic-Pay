@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:klytic_pay/models/payroll.dart';
 import '../constants/app_constants.dart';
 import '../constants/app_icons.dart';
+import '../models/payroll.dart';
 import '../widgets/app_svg_icon.dart';
 
 class PayrollScreen extends StatefulWidget {
@@ -13,40 +13,23 @@ class PayrollScreen extends StatefulWidget {
 
 class _PayrollScreenState extends State<PayrollScreen> {
   final List<Payroll> _payrolls = [];
-
-  void _addPayroll(Payroll payroll) {
-    setState(() {
-      _payrolls.add(payroll);
-    });
-  }
-
-  void _deletePayroll(String id) {
-    setState(() {
-      _payrolls.removeWhere((p) => p.id == id);
-    });
-  }
-
-  void _navigateToPayrollForm() async {
+  
+  void _addPayroll() {
     if (_payrolls.length >= AppConstants.maxPayrollPayees) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text('Maximum ${AppConstants.maxPayrollPayees} payees allowed'),
+          content: Text('Maximum ${AppConstants.maxPayrollPayees} payees allowed'),
         ),
       );
       return;
     }
-
-    final newPayroll = await Navigator.push(
+    
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const PayrollFormScreen(),
       ),
     );
-
-    if (newPayroll != null) {
-      _addPayroll(newPayroll);
-    }
   }
 
   @override
@@ -76,8 +59,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Max ${AppConstants.maxPayrollPayees} payees',
-                    style: TextStyle(
-                        color: AppColors.textSecondary, fontSize: 12),
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                   ),
                 ],
               ),
@@ -87,19 +69,14 @@ class _PayrollScreenState extends State<PayrollScreen> {
               itemCount: _payrolls.length,
               itemBuilder: (context, index) {
                 final payroll = _payrolls[index];
-                return _PayrollCard(
-                  payroll: payroll,
-                  onDelete: () => _deletePayroll(payroll.id),
-                );
+                return _PayrollCard(payroll: payroll);
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToPayrollForm,
-        backgroundColor: AppColors.primary,
+        onPressed: _addPayroll,
         child: const AppSvgIcon(
           assetName: AppIcons.plus,
           size: 24,
-          color: AppColors.accent,
         ),
       ),
     );
@@ -108,9 +85,8 @@ class _PayrollScreenState extends State<PayrollScreen> {
 
 class _PayrollCard extends StatelessWidget {
   final Payroll payroll;
-  final VoidCallback onDelete;
 
-  const _PayrollCard({required this.payroll, required this.onDelete});
+  const _PayrollCard({required this.payroll});
 
   String _getFrequencyText() {
     switch (payroll.frequency) {
@@ -131,11 +107,11 @@ class _PayrollCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.primary.withOpacity(0.2),
+          backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
           child: AppSvgIcon(
             assetName: AppIcons.person,
             size: 24,
-            color: AppColors.primary,
+            color: AppColors.secondary,
           ),
         ),
         title: Text(payroll.payeeName),
@@ -155,7 +131,9 @@ class _PayrollCard extends StatelessWidget {
             size: 20,
             color: Colors.red,
           ),
-          onPressed: onDelete,
+          onPressed: () {
+            // TODO: Delete payroll
+          },
         ),
       ),
     );
@@ -174,24 +152,17 @@ class _PayrollFormScreenState extends State<PayrollFormScreen> {
   final _nameController = TextEditingController();
   final _walletController = TextEditingController();
   final _amountController = TextEditingController();
-
-  String _selectedCurrency = AppConstants.bdagToken;
+  
+  String _selectedCurrency = AppConstants.solToken;
   PaymentFrequency _selectedFrequency = PaymentFrequency.oneTime;
-  final List<bool> _isSelected = [true, false]; // For USD/BDAG toggle
 
   void _schedulePayroll() {
     if (_formKey.currentState!.validate()) {
-      final newPayroll = Payroll(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        payeeName: _nameController.text,
-        walletAddress: _walletController.text,
-        amount: double.parse(_amountController.text),
-        currency: _selectedCurrency,
-        frequency: _selectedFrequency,
-        createdAt: DateTime.now(),
-        status: PayrollStatus.scheduled,
+      // TODO: Create payroll via API
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Payroll scheduled successfully')),
       );
-      Navigator.pop(context, newPayroll);
+      Navigator.pop(context);
     }
   }
 
@@ -227,6 +198,7 @@ class _PayrollFormScreenState extends State<PayrollFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
+              
               TextFormField(
                 controller: _walletController,
                 decoration: const InputDecoration(
@@ -244,63 +216,58 @@ class _PayrollFormScreenState extends State<PayrollFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _amountController,
-                      decoration: const InputDecoration(
-                        labelText: AppStrings.amount,
-                        prefixIcon: AppSvgIcon(
-                          assetName: AppIcons.money,
-                          size: 20,
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter amount';
-                        }
-                        if (double.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        return null;
-                      },
-                    ),
+              
+              TextFormField(
+                controller: _amountController,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.amount,
+                  prefixIcon: AppSvgIcon(
+                    assetName: AppIcons.money,
+                    size: 20,
                   ),
-                  const SizedBox(width: 10),
-                  ToggleButtons(
-                    isSelected: _isSelected,
-                    onPressed: (int index) {
-                      setState(() {
-                        for (int i = 0; i < _isSelected.length; i++) {
-                          _isSelected[i] = i == index;
-                        }
-                        _selectedCurrency = index == 0
-                            ? AppConstants.bdagToken
-                            : AppConstants.usdCurrency;
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(8),
-                    selectedColor: AppColors.white,
-                    color: AppColors.accent,
-                    fillColor: AppColors.accent,
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(AppConstants.bdagToken),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(AppConstants.usdCurrency),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter amount';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
+              
+              DropdownButtonFormField<String>(
+                initialValue: _selectedCurrency,
+                decoration: const InputDecoration(
+                  labelText: 'Currency',
+                  prefixIcon: AppSvgIcon(
+                    assetName: AppIcons.crypto,
+                    size: 20,
+                  ),
+                ),
+                items: [
+                  DropdownMenuItem(
+                    value: AppConstants.solToken,
+                    child: Text(AppConstants.solToken),
+                  ),
+                  DropdownMenuItem(
+                    value: AppConstants.usdcToken,
+                    child: Text(AppConstants.usdcToken),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _selectedCurrency = value);
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              
               DropdownButtonFormField<PaymentFrequency>(
-                value: _selectedFrequency,
+                initialValue: _selectedFrequency,
                 decoration: const InputDecoration(
                   labelText: AppStrings.paymentFrequency,
                   prefixIcon: AppSvgIcon(
@@ -317,14 +284,6 @@ class _PayrollFormScreenState extends State<PayrollFormScreen> {
                     value: PaymentFrequency.weekly,
                     child: Text(AppStrings.weekly),
                   ),
-                  DropdownMenuItem(
-                    value: PaymentFrequency.biWeekly,
-                    child: Text(AppStrings.biWeekly),
-                  ),
-                  DropdownMenuItem(
-                    value: PaymentFrequency.monthly,
-                    child: Text(AppStrings.monthly),
-                  ),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -333,17 +292,13 @@ class _PayrollFormScreenState extends State<PayrollFormScreen> {
                 },
               ),
               const SizedBox(height: 24),
+              
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: _schedulePayroll,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accent,
-                    ),
-                    child: const Text(
-                      AppStrings.schedulePayroll,
-                      style: TextStyle(color: AppColors.white),
-                    )),
+                  onPressed: _schedulePayroll,
+                  child: const Text(AppStrings.schedulePayroll),
+                ),
               ),
             ],
           ),

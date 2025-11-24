@@ -1,17 +1,19 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:klytic_pay/models/invoice.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../constants/app_constants.dart';
 import '../constants/app_icons.dart';
 import '../widgets/app_svg_icon.dart';
 
 class PaymentScreen extends StatefulWidget {
-  final Invoice invoice;
+  final String paymentData;
+  final String amount;
+  final String currency;
 
   const PaymentScreen({
     super.key,
-    required this.invoice,
+    required this.paymentData,
+    required this.amount,
+    required this.currency,
   });
 
   @override
@@ -19,34 +21,21 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  bool _isProcessing = true;
+  bool _isProcessing = false;
   bool _isCompleted = false;
-  Timer? _timer;
 
-  @override
-  void initState() {
-    super.initState();
-    _startTransactionCheck();
-  }
-
-  void _startTransactionCheck() {
-    // In a real app, this would be a WebSocket or periodic API call.
-    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      // Mocking a fast confirmation (<1s)
+  void _checkTransaction() {
+    setState(() => _isProcessing = true);
+    
+    // TODO: Check transaction status via Solana
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
           _isProcessing = false;
           _isCompleted = true;
         });
-        _timer?.cancel();
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 
   @override
@@ -66,15 +55,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
             children: [
               // Payment Info
               Text(
-                '${AppStrings.pay} ${widget.invoice.amount} ${widget.invoice.currency}',
+                'Pay ${widget.amount} ${widget.currency}',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.accent,
                 ),
               ),
               const SizedBox(height: 32),
-
+              
               // QR Code
               if (!_isCompleted)
                 Card(
@@ -82,15 +70,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: QrImageView(
-                      data:
-                          'blockdag:${widget.invoice.transactionHash}?amount=${widget.invoice.amount}',
+                      data: widget.paymentData,
                       version: QrVersions.auto,
                       size: 250,
-                      backgroundColor: AppColors.white,
+                      backgroundColor: Colors.white,
                     ),
                   ),
                 ),
-
+              
               // Success State
               if (_isCompleted)
                 Column(
@@ -106,22 +93,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.accent,
                       ),
                     ),
                   ],
                 ),
-
+              
               const SizedBox(height: 32),
-
+              
               // Transaction Status
               if (_isProcessing)
                 Column(
                   children: [
-                    const CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.primary),
-                    ),
+                    const CircularProgressIndicator(),
                     const SizedBox(height: 16),
                     Text(
                       AppStrings.transactionPending,
@@ -133,13 +116,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 Column(
                   children: [
                     Text(
-                      AppStrings.scanQrCodeWithWallet,
+                      'Scan QR code with your Solana wallet',
                       style: TextStyle(color: AppColors.textSecondary),
                       textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: _checkTransaction,
+                      icon: const AppSvgIcon(
+                        assetName: AppIcons.refresh,
+                        size: 20,
+                      ),
+                      label: const Text('Check Status'),
+                    ),
                   ],
                 ),
-
+              
               // Payment Details
               if (!_isCompleted) ...[
                 const SizedBox(height: 32),
@@ -149,21 +141,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     child: Column(
                       children: [
                         _DetailRow(
-                          label: AppStrings.amount,
-                          value:
-                              '${widget.invoice.amount} ${widget.invoice.currency}',
+                          label: 'Amount',
+                          value: '${widget.amount} ${widget.currency}',
                         ),
                         const Divider(),
                         _DetailRow(
-                          label: AppStrings.network,
-                          value: 'BlockDAG (${AppConstants.blockdagNetwork})',
+                          label: 'Network',
+                          value: 'Solana (${AppConstants.solanaNetwork})',
                         ),
                       ],
                     ),
                   ),
                 ),
               ],
-
+              
               // Done Button
               if (_isCompleted) ...[
                 const SizedBox(height: 32),
@@ -171,13 +162,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accent,
-                    ),
-                    child: const Text(
-                      AppStrings.done,
-                      style: TextStyle(color: AppColors.white),
-                    ),
+                    child: const Text('Done'),
                   ),
                 ),
               ],
@@ -209,8 +194,7 @@ class _DetailRow extends StatelessWidget {
         ),
         Text(
           value,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, color: AppColors.accent),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ],
     );

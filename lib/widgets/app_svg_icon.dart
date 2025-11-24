@@ -5,7 +5,7 @@ class AppSvgIcon extends StatelessWidget {
   const AppSvgIcon({
     super.key,
     required this.assetName,
-    this.size = 20,
+    this.size = 24,
     this.color,
     this.semanticLabel,
   });
@@ -28,3 +28,4 @@ class AppSvgIcon extends StatelessWidget {
     );
   }
 }
+

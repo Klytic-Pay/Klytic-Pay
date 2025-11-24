@@ -2,7 +2,7 @@
 
 ## Overview
 
-Klytic Pay is a user-friendly Solana-based payroll and invoicing application designed to streamline financial operations for businesses and freelancers. Built on Solana's fast, low-cost blockchain infrastructure, Klytic Pay enables seamless management of invoicing, payments, and payroll using SOL and USDC.
+Klytic Pay is a user-friendly BlockDAG-based payroll and invoicing application designed to streamline financial operations for businesses and freelancers. Built on BlockDAG’s fast, low-cost infrastructure, Klytic Pay enables seamless management of invoicing, payments, and payroll using BDAG and USD-pegged stable tokens.
 
 ## Mission
 
@@ -12,15 +12,15 @@ To democratize access to efficient, blockchain-powered financial tools that make
 
 ### 💰 Invoicing
 - Create and send professional invoices
-- Support for SOL and USDC payments
+- Support for BDAG and USD payments
 - Track invoice status (pending, paid, overdue)
 - Automated payment notifications
 
 ### 💸 Payments
-- Fast Solana-powered transactions
+- Fast BlockDAG-powered transactions
 - Low transaction fees
 - Real-time payment confirmation
-- Multi-currency support (SOL, USDC)
+- Multi-currency support (BDAG, USD)
 
 ### 👥 Payroll Management
 - Simple payroll processing
@@ -28,25 +28,25 @@ To democratize access to efficient, blockchain-powered financial tools that make
 - Scheduled recurring payments
 - Payment history and reporting
 
-## Why Solana?
+## Why BlockDAG?
 
-- **Speed**: Transactions confirm in seconds
-- **Cost-Effective**: Minimal transaction fees (fractions of a cent)
-- **Scalability**: Handle high transaction volumes
-- **Reliability**: Proven blockchain infrastructure
+- **Speed**: Parallel transaction confirmation for near-instant settlement
+- **Cost-Effective**: Minimal network fees
+- **Scalability**: DAG architecture handles high throughput
+- **Reliability**: Resilient, decentralized infrastructure
 
 ## MVP Timeline
 
 **Target**: 2-week development cycle to deliver a testable product
 
-**Objective**: Validate core functionality (invoicing, payments, payroll) with Solana users and gather feedback for iteration.
+**Objective**: Validate core functionality (invoicing, payments, payroll) with BlockDAG users and gather feedback for iteration.
 
 ## Technology Stack
 
 - **Framework**: Flutter (Dart)
-- **Blockchain**: Solana
-- **Tokens**: SOL, USDC
-- **Wallet Integration**: Solana wallet adapters
+- **Blockchain**: BlockDAG
+- **Tokens**: BDAG, USD stable tokens
+- **Wallet Integration**: BlockDAG wallet adapters
 - **State Management**: [To be determined]
 - **Backend/API**: [To be determined]
 
