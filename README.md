@@ -15,7 +15,7 @@ To democratize access to efficient, blockchain-powered financial tools that make
 
 Create and send professional invoices
 
-Support for BlockDag-native SOL/USDC-equivalent assets
+Support for BlockDag-native USDC-equivalent assets
 
 Track invoice status: pending, paid, overdue
 
